@@ -27,7 +27,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
 
 add_executable(
     unit_test
-    ${PROJECT_SOURCE_DIR}/test/hello_world_test.cc
+    ${PROJECT_SOURCE_DIR}/test/snapshot_test.cc
 )
 
 target_link_libraries(
@@ -48,7 +48,7 @@ DISCOVERY_TIMEOUT  # how long to wait (in seconds) before crashing
 
 add_executable(
     unit_benchmark
-    ${PROJECT_SOURCE_DIR}/test/hello_world_benchmark.cc
+    ${PROJECT_SOURCE_DIR}/test/snapshot_benchmark.cc
 )
 
 target_link_libraries(
