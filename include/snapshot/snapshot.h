@@ -8,7 +8,7 @@
 
 namespace snapshot {
 
-class Snapshot {
+class StringUtility {
 public:
     template <typename T>
     static std::string ToString(const T&& t) {
@@ -103,6 +103,10 @@ private:
         }
         return res;
     }
+};
+
+class Snapshot {
+public:
 };
 
 }  // namespace snapshot
