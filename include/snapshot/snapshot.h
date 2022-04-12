@@ -8,6 +8,7 @@
 #include <array>
 #include <fstream>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -50,7 +51,7 @@ public:
         std::string s;
         ss << t;
         ss >> s;
-        return s;
+        return ss.str();
     }
 
     static std::string ToString(int value) {
@@ -89,29 +90,32 @@ public:
         return std::to_string(value);
     }
 
-    static std::string ToString(const char* s) {
-        return std::string(s);
+    static std::string ToString(const std::string& s) {
+        return std::string("\"") + s + std::string("\"");
     }
 
-    static std::string ToString(const std::string& s) {
-        return s;
+    static std::string ToString(const char* s) {
+        return ToString(std::string(s));
     }
 
     template <typename T>
     static std::string ToString(const std::vector<T>& v) {
         if (v.empty()) {
-            return "";
+            return "{}";
         }
 
         std::vector<std::string> string_vec = getStringVector(v);
-        char delimiter = getDelimiter(string_vec);
+        char delimiter = ',';
 
-        std::string res = string_vec[0];
+        std::string res = "{";
+        res += string_vec[0];
 
         for (size_t i = 1; i < string_vec.size(); i++) {
             res += delimiter;
             res += string_vec[i];
         }
+
+        res += "}";
 
         return res;
     }
@@ -266,9 +270,8 @@ public:
         out_file_ptr->write("// ", 3);
         out_file_ptr->write(snapshot_key.c_str(), snapshot_key.length());
         out_file_ptr->write("\n", 1);
-        out_file_ptr->write("R\"(\n", 4);
         out_file_ptr->write(content.c_str(), content.length());
-        out_file_ptr->write("\n\")\n", 4);
+        out_file_ptr->write("\n", 1);
     }
 
     template <typename T>
