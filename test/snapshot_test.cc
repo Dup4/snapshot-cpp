@@ -8,9 +8,6 @@ using namespace snapshot;
 
 class SnapshotTest : public testing::Test, public Snapshot {
 public:
-    static string GetPWD() {
-        return Snapshot::getPWD();
-    }
 };
 
 TEST_F(SnapshotTest, to_string_int) {
