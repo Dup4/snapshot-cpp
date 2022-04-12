@@ -127,9 +127,7 @@ public:
         std::string t = "";
         for (int i = 0; i <= len; i++) {
             if (i == len || s[i] == delimiter) {
-                if (!t.empty()) {
-                    res.push_back(t);
-                }
+                res.push_back(t);
                 t = "";
             } else {
                 t += s[i];
@@ -319,7 +317,7 @@ protected:
 
         filename_split_copy.push_back(getSnapshotsDirname());
 
-        return std::string("/") + StringUtility::Join(filename_split_copy, '/');
+        return StringUtility::Join(filename_split_copy, '/');
     }
 
     static std::string getSnapshotFilename(const char* file_name) {
