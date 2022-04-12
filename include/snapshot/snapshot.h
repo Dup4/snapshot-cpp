@@ -2,6 +2,7 @@
 #define SNAPSHOT_SNAPSHOT_H
 
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -108,6 +109,32 @@ private:
 
 class Snapshot {
 public:
+private:
+    static std::string getSnapshotsDirname() {
+        return "__snapshots__";
+    }
+
+    static std::string getSnapshotFilename(const char* file_name) {
+        return std::string(file_name) + std::string(".snap");
+    }
+
+    static std::string getSnapshotKey(const char* file_name, const char* func_name, const int line_number) {
+        std::string key = "";
+        key += file_name;
+        key += ".";
+        key += func_name;
+        key += ".";
+        key += StringUtility::ToString(line_number);
+
+        const int ix = count[key]++;
+
+        key += ".";
+        key += StringUtility::ToString(ix);
+
+        return key;
+    }
+
+    inline static std::map<std::string, int> count;
 };
 
 }  // namespace snapshot
