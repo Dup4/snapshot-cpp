@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+namespace snapshot {
+
 class Snapshot {
 public:
     template <typename T>
@@ -102,6 +104,8 @@ private:
         return res;
     }
 };
+
+}  // namespace snapshot
 
 #define SNAPSHOT
 #define INLINE_SNAPSHOT
