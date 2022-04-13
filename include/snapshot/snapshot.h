@@ -2,6 +2,7 @@
 #define SNAPSHOT_SNAPSHOT_H
 
 #include <dirent.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -178,7 +179,7 @@ public:
     static bool Mkdir(const std::string& path) {
         // if the path exists in its entirety
         // there is no need to create it
-        if (access(path.c_str(), 0) == 0) {
+        if (access(path.c_str(), F_OK) == 0) {
             return true;
         }
 
@@ -195,7 +196,7 @@ public:
         }
 
         auto __mkdir = [](const std::string& path) -> bool {
-            if (access(path.c_str(), 0) == 0) {
+            if (access(path.c_str(), F_OK) == 0) {
                 return true;
             }
 
@@ -210,7 +211,14 @@ public:
             return false;
         };
 
-        while ((pos = path.find('/', pos + 1)) != std::string::npos) {
+        while (true) {
+            size_t cur_pos = path.find('/', pos + 1);
+            pos = cur_pos;
+
+            if (cur_pos == std::string::npos) {
+                break;
+            }
+
             auto _path = path.substr(0, pos);
 
             if (!__mkdir(_path)) {
@@ -229,9 +237,62 @@ public:
         return true;
     };
 
-    static bool DeleteFile(const std::string& path) {
+    static bool RemoveFile(const std::string& path) {
+        if (access(path.c_str(), F_OK) != 0) {
+            return true;
+        }
+
         int ret = remove(path.c_str());
         return ret == 0;
+    }
+
+    static int RemoveDirectory(const char* path) {
+        DIR* d = opendir(path);
+        size_t path_len = strlen(path);
+        int r = -1;
+
+        if (d) {
+            struct dirent* p;
+
+            r = 0;
+            while (!r && (p = readdir(d))) {
+                int r2 = -1;
+                char* buf;
+                size_t len;
+
+                /* Skip the names "." and ".." as we don't want to recurse on them. */
+                if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, "..")) {
+                    continue;
+                }
+
+                len = path_len + strlen(p->d_name) + 2;
+                buf = (char*)malloc(len);
+
+                if (buf) {
+                    struct stat statbuf;
+
+                    snprintf(buf, len, "%s/%s", path, p->d_name);
+                    if (!stat(buf, &statbuf)) {
+                        if (S_ISDIR(statbuf.st_mode)) {
+                            r2 = RemoveDirectory(buf);
+                        } else {
+                            r2 = unlink(buf);
+                        }
+                    }
+                    free(buf);
+                }
+
+                r = r2;
+            }
+
+            closedir(d);
+        }
+
+        if (!r) {
+            r = rmdir(path);
+        }
+
+        return r;
     }
 
     static std::unique_ptr<std::ofstream> OpenFileWithAppendWrite(const std::string& path) {
@@ -257,7 +318,7 @@ public:
         }
 
         if (StringUtility::Split(snapshot_key, '.').back() == "0") {
-            FileUtility::DeleteFile(snapshot_target_file);
+            FileUtility::RemoveFile(snapshot_target_file);
         }
 
         auto out_file_ptr = FileUtility::OpenFileWithAppendWrite(snapshot_target_file);
