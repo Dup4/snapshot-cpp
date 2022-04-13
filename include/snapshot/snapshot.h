@@ -1,6 +1,7 @@
 #ifndef SNAPSHOT_SNAPSHOT_H
 #define SNAPSHOT_SNAPSHOT_H
 
+#include <ctype.h>
 #include <dirent.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -91,12 +92,16 @@ public:
         return std::to_string(value);
     }
 
-    static std::string ToString(const std::string& s) {
-        return std::string("\"") + s + std::string("\"");
+    static std::string ToString(const char* s) {
+        if (hasEscapeCharacter(s)) {
+            return std::string("R\"(") + s + std::string(")\"");
+        } else {
+            return std::string("\"") + s + std::string("\"");
+        }
     }
 
-    static std::string ToString(const char* s) {
-        return ToString(std::string(s));
+    static std::string ToString(const std::string& s) {
+        return std::string("std::string(") + ToString(s.c_str()) + std::string(")");
     }
 
     template <typename T>
@@ -171,6 +176,30 @@ private:
         }
 
         return res;
+    }
+
+    static bool hasEscapeCharacter(const std::string& s) {
+        const char* escape_character_set = "\\\"\'\?\a\b\f\n\r\t\v\0";
+
+        const auto check = [&escape_character_set](char c) -> bool {
+            auto p = escape_character_set;
+            while (*p) {
+                if (c == *p) {
+                    return true;
+                }
+                ++p;
+            }
+
+            return false;
+        };
+
+        for (const auto& c : s) {
+            if (check(c)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 };
 
