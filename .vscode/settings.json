@@ -5,7 +5,8 @@
     "cSpell.words": [
         "cmake",
         "codecov",
-        "GCOVR"
+        "GCOVR",
+        "pnpm"
     ],
     "files.associations": {
         "BUILD": "starlark",
