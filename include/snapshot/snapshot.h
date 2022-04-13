@@ -237,16 +237,30 @@ public:
         return true;
     };
 
-    static bool RemoveFile(const std::string& path) {
-        if (access(path.c_str(), F_OK) != 0) {
-            return true;
-        }
-
-        int ret = remove(path.c_str());
-        return ret == 0;
+    static int RemoveFile(const std::string& path) {
+        return removeFile(path.c_str());
     }
 
-    static int RemoveDirectory(const char* path) {
+    static int RemoveDirectory(const std::string& path) {
+        return removeDirectory(path.c_str());
+    }
+
+    static std::unique_ptr<std::ofstream> OpenFileWithAppendWrite(const std::string& path) {
+        std::unique_ptr<std::ofstream> out_file_ptr = std::make_unique<std::ofstream>();
+        out_file_ptr->open(path, std::ofstream::out | std::ofstream::ate | std::ofstream::app);
+        return out_file_ptr;
+    }
+
+private:
+    static int removeFile(const char* path) {
+        if (access(path, F_OK) != 0) {
+            return 0;
+        }
+
+        return remove(path);
+    }
+
+    static int removeDirectory(const char* path) {
         DIR* d = opendir(path);
         size_t path_len = strlen(path);
         int r = -1;
@@ -274,7 +288,7 @@ public:
                     snprintf(buf, len, "%s/%s", path, p->d_name);
                     if (!stat(buf, &statbuf)) {
                         if (S_ISDIR(statbuf.st_mode)) {
-                            r2 = RemoveDirectory(buf);
+                            r2 = removeDirectory(buf);
                         } else {
                             r2 = unlink(buf);
                         }
@@ -294,12 +308,6 @@ public:
 
         return r;
     }
-
-    static std::unique_ptr<std::ofstream> OpenFileWithAppendWrite(const std::string& path) {
-        std::unique_ptr<std::ofstream> out_file_ptr = std::make_unique<std::ofstream>();
-        out_file_ptr->open(path, std::ofstream::out | std::ofstream::ate | std::ofstream::app);
-        return out_file_ptr;
-    }
 };
 
 class Snapshot {
@@ -313,11 +321,15 @@ public:
         const auto snapshot_dir = getSnapshotDir(filename_split);
         const auto snapshot_target_file = StringUtility::Join({snapshot_dir, snapshot_filename}, '/');
 
+        if (isFirstEnter(snapshot_dir)) {
+            FileUtility::RemoveDirectory(snapshot_dir);
+        }
+
         if (!FileUtility::Mkdir(snapshot_dir)) {
             return;
         }
 
-        if (StringUtility::Split(snapshot_key, '.').back() == "0") {
+        if (isFirstEnter(file_name)) {
             FileUtility::RemoveFile(snapshot_target_file);
         }
 
@@ -400,6 +412,14 @@ protected:
         key += StringUtility::ToString(ix);
 
         return key;
+    }
+
+    static bool isFirstEnter(const std::string& key) {
+        if (count[key]++ == 0) {
+            return true;
+        }
+
+        return false;
     }
 
     inline static std::map<std::string, int> count;
