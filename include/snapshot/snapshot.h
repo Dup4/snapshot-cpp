@@ -358,6 +358,10 @@ public:
         return execSystemCommand(cmd.c_str());
     }
 
+    static std::string Diff(const std::string& before_file_path, const std::string& after_file_path) {
+        return Exec(std::string("git diff ") + before_file_path + " " + after_file_path);
+    }
+
 private:
     static std::string execSystemCommand(const char* cmd) {
         std::array<char, 128> buffer;
@@ -384,7 +388,7 @@ public:
         const auto content = StringUtility::ToString(t);
         const auto filename_split = StringUtility::Split(file_name, '/');
         const auto snapshot_key = getSnapshotKey(file_name, func_name, line_number, custom_keys);
-        const auto snapshot_filename = getSnapshotFilename(filename_split.back().c_str());
+        const auto snapshot_filename = getSnapshotFilename(filename_split.back());
         const auto snapshot_dir = getSnapshotDir(filename_split);
         const auto snapshot_target_file = StringUtility::Join({snapshot_dir, snapshot_filename}, '/');
 
@@ -394,10 +398,6 @@ public:
 
         if (!FileUtility::Mkdir(snapshot_dir)) {
             return;
-        }
-
-        if (isFirstEnter(file_name)) {
-            FileUtility::RemoveFile(snapshot_target_file);
         }
 
         std::string res;
@@ -426,6 +426,58 @@ public:
         FileUtility::RewriteFile(file_name, StringUtility::Join(file_content, '\n'));
 
         return t;
+    }
+
+    template <typename T>
+    static void GenerateSnapshotDiff(const T& before, const T& after, const char* file_name, const char* func_name,
+            const int line_number, const std::vector<std::string>& custom_keys = std::vector<std::string>({})) {
+        const auto filename_split = StringUtility::Split(file_name, '/');
+        const auto snapshot_key = getSnapshotKey(file_name, func_name, line_number, custom_keys);
+        const auto snapshot_filename = getSnapshotDiffFilename(filename_split.back());
+        const auto snapshot_dir = getSnapshotDir(filename_split);
+        const auto snapshot_diff_target_file = StringUtility::Join({snapshot_dir, snapshot_filename}, '/');
+
+        if (isFirstEnter(snapshot_dir)) {
+            FileUtility::RemoveDirectory(snapshot_dir);
+        }
+
+        if (!FileUtility::Mkdir(snapshot_dir)) {
+            return;
+        }
+
+        const auto before_content = StringUtility::ToString(before);
+        const auto after_content = StringUtility::ToString(after);
+        const auto before_content_target_file =
+                StringUtility::Join({"/tmp", getSnapshotDiffBeforeFilename(filename_split.back())}, '/');
+        const auto after_content_target_file =
+                StringUtility::Join({"/tmp", getSnapshotDiffAfterFilename(filename_split.back())}, '/');
+
+        FileUtility::RewriteFile(before_content_target_file, before_content);
+        FileUtility::RewriteFile(after_content_target_file, after_content);
+
+        std::cout << before_content_target_file << std::endl;
+        std::cout << after_content_target_file << std::endl;
+
+        const auto diff_content = SystemUtility::Diff(before_content_target_file, after_content_target_file);
+
+        FileUtility::RemoveFile(before_content_target_file);
+        FileUtility::RemoveFile(after_content_target_file);
+
+        std::string res;
+
+        res += "// ";
+        res += snapshot_key;
+        res += "\n";
+        res += "// before\n";
+        res += before_content;
+        res += "\n";
+        res += "// after\n";
+        res += after_content;
+        res += "\n";
+        res += "// diff\n";
+        res += diff_content;
+
+        FileUtility::AppendFile(snapshot_diff_target_file, res);
     }
 
 protected:
@@ -487,8 +539,20 @@ protected:
         return StringUtility::Join(filename_split_copy, '/');
     }
 
-    static std::string getSnapshotFilename(const char* file_name) {
+    static std::string getSnapshotFilename(const std::string& file_name) {
         return std::string(file_name) + std::string(".snap.cc");
+    }
+
+    static std::string getSnapshotDiffFilename(const std::string& file_name) {
+        return std::string(file_name) + std::string(".snap.diff");
+    }
+
+    static std::string getSnapshotDiffBeforeFilename(const std::string& file_name) {
+        return std::string(file_name) + std::string(".snap.before");
+    }
+
+    static std::string getSnapshotDiffAfterFilename(const std::string& file_name) {
+        return std::string(file_name) + std::string(".snap.after");
     }
 
     static std::string getSnapshotKey(const char* file_name, const char* func_name, const int line_number,
@@ -532,5 +596,9 @@ protected:
             content, __FILE__, __FUNCTION__, __LINE__, std::vector<std::string>({__VA_ARGS__}))
 
 #define SNAPSHOT_INLINE(content) snapshot::Snapshot::GenerateSnapshotInline(content, __FILE__, __LINE__)
+
+#define SNAPSHOT_DIFF(before, after, ...)     \
+    snapshot::Snapshot::GenerateSnapshotDiff( \
+            before, after, __FILE__, __FUNCTION__, __LINE__, std::vector<std::string>({__VA_ARGS__}))
 
 #endif  // SNAPSHOT_SNAPSHOT_H
