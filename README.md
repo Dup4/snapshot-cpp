@@ -4,3 +4,9 @@
 [![Test](https://github.com/Dup4/snapshot-cpp/actions/workflows/test.yml/badge.svg)](https://github.com/Dup4/snapshot-cpp/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/Dup4/snapshot-cpp/branch/main/graph/badge.svg)](https://codecov.io/gh/Dup4/snapshot-cpp)
 [![GitHub release](https://img.shields.io/github/release/Dup4/snapshot-cpp.svg)](https://GitHub.com/Dup4/snapshot-cpp/releases/)
+
+## Feature
+
+* `SNAPSHOT(content)`
+* `SNAPSHOT_INLINE(content)`
+* Only support Linux and macOS
