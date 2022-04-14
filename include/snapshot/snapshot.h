@@ -367,10 +367,11 @@ private:
 class Snapshot {
 public:
     template <typename T>
-    static void GenerateSnapshot(const T& t, const char* file_name, const char* func_name, const int line_number) {
+    static void GenerateSnapshot(const T& t, const char* file_name, const char* func_name, const int line_number,
+            const std::vector<std::string>& custom_keys = std::vector<std::string>({})) {
         const auto content = StringUtility::ToString(t);
         const auto filename_split = StringUtility::Split(file_name, '/');
-        const auto snapshot_key = getSnapshotKey(file_name, func_name, line_number);
+        const auto snapshot_key = getSnapshotKey(file_name, func_name, line_number, custom_keys);
         const auto snapshot_filename = getSnapshotFilename(filename_split.back().c_str());
         const auto snapshot_dir = getSnapshotDir(filename_split);
         const auto snapshot_target_file = StringUtility::Join({snapshot_dir, snapshot_filename}, '/');
@@ -400,8 +401,8 @@ public:
     }
 
     template <typename T>
-    static void GenerateSnapshotInline(
-            const T& t, const char* file_name, const char* func_name, const int line_number) {}
+    static void GenerateSnapshotInline(const T& t, const char* file_name, const char* func_name, const int line_number,
+            const std::vector<std::string>& custom_keys = std::vector<std::string>({})) {}
 
 protected:
     static std::string getSnapshotsDirname() {
@@ -432,10 +433,11 @@ protected:
     }
 
     static std::string getSnapshotFilename(const char* file_name) {
-        return std::string(file_name) + std::string(".snap");
+        return std::string(file_name) + std::string(".snap.cc");
     }
 
-    static std::string getSnapshotKey(const char* file_name, const char* func_name, const int line_number) {
+    static std::string getSnapshotKey(const char* file_name, const char* func_name, const int line_number,
+            const std::vector<std::string>& custom_keys) {
         std::string key = "";
 
         key += file_name;
@@ -443,6 +445,11 @@ protected:
         key += func_name;
         key += ".";
         key += StringUtility::ToString(line_number);
+
+        if (!custom_keys.empty()) {
+            key += ".";
+            key += StringUtility::Join(custom_keys, '.');
+        }
 
         const int ix = count[key]++;
 
@@ -465,7 +472,12 @@ protected:
 
 }  // namespace snapshot
 
-#define SNAPSHOT(content) snapshot::Snapshot::GenerateSnapshot(content, __FILE__, __FUNCTION__, __LINE__)
-#define SNAPSHOT_INLINE(content) snapshot::Snapshot::GenerateSnapshotInline(content, __FILE__, __FUNCTION__, __LINE__)
+#define SNAPSHOT(content, ...)            \
+    snapshot::Snapshot::GenerateSnapshot( \
+            content, __FILE__, __FUNCTION__, __LINE__, std::vector<std::string>({__VA_ARGS__}))
+
+#define SNAPSHOT_INLINE(content, ...)           \
+    snapshot::Snapshot::GenerateSnapshotInline( \
+            content, __FILE__, __FUNCTION__, __LINE__, std::vector<std::string>({__VA_ARGS__}))
 
 #endif  // SNAPSHOT_SNAPSHOT_H
