@@ -149,6 +149,7 @@ public:
             if (i) {
                 res += delimiter;
             }
+
             res += ss[i];
         }
 
@@ -339,6 +340,30 @@ private:
     }
 };
 
+class SystemUtility {
+public:
+    static std::string Exec(const std::string& cmd) {
+        return execSystemCommand(cmd.c_str());
+    }
+
+private:
+    static std::string execSystemCommand(const char* cmd) {
+        std::array<char, 128> buffer;
+        std::string result;
+        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+
+        if (!pipe) {
+            throw std::runtime_error("popen() failed!");
+        }
+
+        while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+            result += buffer.data();
+        }
+
+        return result;
+    }
+};
+
 class Snapshot {
 public:
     template <typename T>
@@ -379,22 +404,6 @@ public:
             const T& t, const char* file_name, const char* func_name, const int line_number) {}
 
 protected:
-    static std::string execSystemCommand(const char* cmd) {
-        std::array<char, 128> buffer;
-        std::string result;
-        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-
-        if (!pipe) {
-            throw std::runtime_error("popen() failed!");
-        }
-
-        while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-            result += buffer.data();
-        }
-
-        return result;
-    }
-
     static std::string getSnapshotsDirname() {
         return "__snapshots__";
     }
