@@ -447,16 +447,13 @@ public:
 
         const auto before_content = StringUtility::ToString(before);
         const auto after_content = StringUtility::ToString(after);
-        const auto before_content_target_file =
-                StringUtility::Join({"/tmp", getSnapshotDiffBeforeFilename(filename_split.back())}, '/');
-        const auto after_content_target_file =
-                StringUtility::Join({"/tmp", getSnapshotDiffAfterFilename(filename_split.back())}, '/');
+        const auto before_content_target_file = StringUtility::Join(
+                {"/tmp", getSnapshotDiffBeforeFilename(StringUtility::Split(snapshot_key, '/').back())}, '/');
+        const auto after_content_target_file = StringUtility::Join(
+                {"/tmp", getSnapshotDiffAfterFilename(StringUtility::Split(snapshot_key, '/').back())}, '/');
 
         FileUtility::RewriteFile(before_content_target_file, before_content);
         FileUtility::RewriteFile(after_content_target_file, after_content);
-
-        std::cout << before_content_target_file << std::endl;
-        std::cout << after_content_target_file << std::endl;
 
         const auto diff_content = SystemUtility::Diff(before_content_target_file, after_content_target_file);
 
