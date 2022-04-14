@@ -457,6 +457,6 @@ protected:
 }  // namespace snapshot
 
 #define SNAPSHOT(content) snapshot::Snapshot::GenerateSnapshot(content, __FILE__, __FUNCTION__, __LINE__)
-#define INLINE_SNAPSHOT(content) snapshot::Snapshot::GenerateSnapshotInline(content, __FILE__, __FUNCTION__, __LINE__)
+#define SNAPSHOT_INLINE(content) snapshot::Snapshot::GenerateSnapshotInline(content, __FILE__, __FUNCTION__, __LINE__)
 
 #endif  // SNAPSHOT_SNAPSHOT_H
