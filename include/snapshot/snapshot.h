@@ -412,12 +412,54 @@ public:
     }
 
     template <typename T>
-    static void GenerateSnapshotInline(const T& t, const char* file_name, const int line_number) {
+    static T GenerateSnapshotInline(const T& t, const char* file_name, const int line_number) {
         const auto content = StringUtility::ToString(t);
         auto file_content = FileUtility::GetAllLines(file_name);
+        auto match_range = getSnapshopInlineMatchRange(file_content[line_number - 1]);
+
+        if (match_range == std::make_pair(-1, -1)) {
+            return t;
+        }
+
+        file_content[line_number - 1] =
+                replaceSnapshotInlineContent(match_range, file_content[line_number - 1], content);
+        FileUtility::RewriteFile(file_name, StringUtility::Join(file_content, '\n'));
+
+        return t;
     }
 
 protected:
+    static std::pair<int, int> getSnapshopInlineMatchRange(const std::string& s) {
+        const std::string prefix = "SNAPSHOT_INLINE(";
+
+        int len = s.length();
+        int prefix_len = prefix.length();
+
+        for (int i = prefix.length() - 1; i + 1 < len; i++) {
+            if (s.substr(i - prefix_len + 1, prefix_len) == prefix) {
+                int l = 1;
+                for (int j = i + 1; j < len; j++) {
+                    if (s[j] == '(') {
+                        ++l;
+                    } else if (s[j] == ')') {
+                        --l;
+                    }
+
+                    if (l == 0) {
+                        return std::make_pair(i - prefix_len + 1, j);
+                    }
+                }
+            }
+        }
+
+        return std::make_pair(-1, -1);
+    }
+
+    static std::string replaceSnapshotInlineContent(
+            std::pair<int, int> replace_range, const std::string& origin_s, const std::string& replace_s) {
+        return origin_s.substr(0, replace_range.first) + replace_s + origin_s.substr(replace_range.second + 1);
+    }
+
     static std::string getSnapshotsDirname() {
         return "__snapshots__";
     }
@@ -489,6 +531,6 @@ protected:
     snapshot::Snapshot::GenerateSnapshot( \
             content, __FILE__, __FUNCTION__, __LINE__, std::vector<std::string>({__VA_ARGS__}))
 
-#define SNAPSHOT_INLINE(content, ...) snapshot::Snapshot::GenerateSnapshotInline(content, __FILE__, __LINE__)
+#define SNAPSHOT_INLINE(content) snapshot::Snapshot::GenerateSnapshotInline(content, __FILE__, __LINE__)
 
 #endif  // SNAPSHOT_SNAPSHOT_H

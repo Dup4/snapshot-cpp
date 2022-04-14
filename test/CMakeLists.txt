@@ -27,6 +27,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
 
 add_executable(
     unit_test
+    ${PROJECT_SOURCE_DIR}/test/file_utility_test.cc
     ${PROJECT_SOURCE_DIR}/test/snapshot_test.cc
     ${PROJECT_SOURCE_DIR}/test/string_utility_test.cc
 )
