@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 set (CMAKE_C_COMPILER "clang")
 set (CMAKE_CXX_COMPILER "clang++")
 
-project(snapshot-cpp VERSION 0.0.4)
+project(snapshot-cpp VERSION 0.0.5)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
