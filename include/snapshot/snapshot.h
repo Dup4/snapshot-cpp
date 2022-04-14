@@ -113,15 +113,16 @@ public:
         std::vector<std::string> string_vec = getStringVector(v);
         char delimiter = ',';
 
-        std::string res = "{";
-        res += string_vec[0];
+        std::string res = "{\n";
 
-        for (size_t i = 1; i < string_vec.size(); i++) {
+        for (const auto& s : string_vec) {
+            res += "    ";
+            res += s;
             res += delimiter;
-            res += string_vec[i];
+            res += "\n";
         }
 
-        res += "}";
+        res += "}\n";
 
         return res;
     }
@@ -157,18 +158,6 @@ public:
     }
 
 private:
-    static char getDelimiter(const std::vector<std::string>& string_vec) {
-        char delimiter = ' ';
-        for (const auto& s : string_vec) {
-            if (s.find('\n') != std::string::npos) {
-                delimiter = '\n';
-                break;
-            }
-        }
-
-        return delimiter;
-    }
-
     template <typename T>
     static std::vector<std::string> getStringVector(const std::vector<T>& vec) {
         std::vector<std::string> res;
@@ -275,10 +264,33 @@ public:
         return removeDirectory(path.c_str());
     }
 
-    static std::unique_ptr<std::ofstream> OpenFileWithAppendWrite(const std::string& path) {
-        std::unique_ptr<std::ofstream> out_file_ptr = std::make_unique<std::ofstream>();
-        out_file_ptr->open(path, std::ofstream::out | std::ofstream::ate | std::ofstream::app);
-        return out_file_ptr;
+    static std::vector<std::string> GetAllLines(const std::string& file_path) {
+        std::vector<std::string> res;
+        std::string tmp_s;
+
+        std::ifstream read_file(file_path);
+
+        while (!read_file.eof()) {
+            getline(read_file, tmp_s);
+            res.push_back(tmp_s);
+        }
+
+        read_file.close();
+        return res;
+    }
+
+    static void RewriteFile(const std::string& file_path, const std::string& content) {
+        std::ofstream file;
+        file.open(file_path, std::ofstream::out | std::ofstream::trunc);
+        file.write(content.c_str(), content.length());
+        file.close();
+    }
+
+    static void AppendFile(const std::string& file_path, const std::string& content) {
+        std::ofstream file;
+        file.open(file_path, std::ofstream::out | std::ofstream::ate | std::ofstream::app);
+        file.write(content.c_str(), content.length());
+        file.close();
     }
 
 private:
@@ -388,21 +400,22 @@ public:
             FileUtility::RemoveFile(snapshot_target_file);
         }
 
-        auto out_file_ptr = FileUtility::OpenFileWithAppendWrite(snapshot_target_file);
-        if (!out_file_ptr) {
-            return;
-        }
+        std::string res;
 
-        out_file_ptr->write("// ", 3);
-        out_file_ptr->write(snapshot_key.c_str(), snapshot_key.length());
-        out_file_ptr->write("\n", 1);
-        out_file_ptr->write(content.c_str(), content.length());
-        out_file_ptr->write("\n", 1);
+        res += "// ";
+        res += snapshot_key;
+        res += "\n";
+        res += content;
+        res += "\n";
+
+        FileUtility::AppendFile(snapshot_target_file, res);
     }
 
     template <typename T>
-    static void GenerateSnapshotInline(const T& t, const char* file_name, const char* func_name, const int line_number,
-            const std::vector<std::string>& custom_keys = std::vector<std::string>({})) {}
+    static void GenerateSnapshotInline(const T& t, const char* file_name, const int line_number) {
+        const auto content = StringUtility::ToString(t);
+        auto file_content = FileUtility::GetAllLines(file_name);
+    }
 
 protected:
     static std::string getSnapshotsDirname() {
@@ -476,8 +489,6 @@ protected:
     snapshot::Snapshot::GenerateSnapshot( \
             content, __FILE__, __FUNCTION__, __LINE__, std::vector<std::string>({__VA_ARGS__}))
 
-#define SNAPSHOT_INLINE(content, ...)           \
-    snapshot::Snapshot::GenerateSnapshotInline( \
-            content, __FILE__, __FUNCTION__, __LINE__, std::vector<std::string>({__VA_ARGS__}))
+#define SNAPSHOT_INLINE(content, ...) snapshot::Snapshot::GenerateSnapshotInline(content, __FILE__, __LINE__)
 
 #endif  // SNAPSHOT_SNAPSHOT_H
