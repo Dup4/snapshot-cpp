@@ -9,4 +9,5 @@
 
 * `SNAPSHOT(content)`
 * `SNAPSHOT_INLINE(content)`
+* `SNAPSHOT_DIFF(before_content, after_content)` required `git`
 * Only support Linux and macOS
