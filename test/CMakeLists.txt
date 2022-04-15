@@ -31,6 +31,7 @@ add_executable(
     ${PROJECT_SOURCE_DIR}/test/snapshot_test.cc
     ${PROJECT_SOURCE_DIR}/test/string_utility_test.cc
     ${PROJECT_SOURCE_DIR}/test/system_utility_test.cc
+    ${PROJECT_SOURCE_DIR}/test/utility_test.cc
 )
 
 target_link_libraries(
