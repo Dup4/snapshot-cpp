@@ -65,3 +65,49 @@ TEST_F(StringUtilityTest, to_string) {
 }
 )#");
 }
+
+TEST_F(StringUtilityTest, split_and_join) {
+    {
+        string s = "tmp.a.b.c";
+        auto v = StringUtility::Split(s, '.');
+
+        EXPECT_EQ(v, decltype(v)({
+                             std::string("tmp"),
+                             std::string("a"),
+                             std::string("b"),
+                             std::string("c"),
+                     }));
+
+        EXPECT_EQ(StringUtility::Join(v, '.'), s);
+    }
+
+    {
+        string s = ".tmp.a.b.c";
+        auto v = StringUtility::Split(s, '.');
+
+        EXPECT_EQ(v, decltype(v)({
+                             std::string(""),
+                             std::string("tmp"),
+                             std::string("a"),
+                             std::string("b"),
+                             std::string("c"),
+                     }));
+
+        EXPECT_EQ(StringUtility::Join(v, '.'), s);
+    }
+
+    {
+        string s = "tmp.a.b.c.";
+        auto v = StringUtility::Split(s, '.');
+
+        EXPECT_EQ(v, decltype(v)({
+                             std::string("tmp"),
+                             std::string("a"),
+                             std::string("b"),
+                             std::string("c"),
+                             std::string(""),
+                     }));
+
+        EXPECT_EQ(StringUtility::Join(v, '.'), s);
+    }
+}
