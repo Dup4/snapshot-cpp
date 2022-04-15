@@ -108,6 +108,16 @@ public:
         return std::string("std::string(") + ToString(s.c_str()) + std::string(")");
     }
 
+    template <typename A, typename B>
+    static std::string ToString(const std::pair<A, B>& v) {
+        std::string res = "{";
+        res += ToString(v.first);
+        res += ", ";
+        res += ToString(v.second);
+        res += "}";
+        return res;
+    }
+
     template <typename T>
     static std::string ToString(const std::vector<T>& v) {
         if (v.empty()) {
@@ -387,6 +397,8 @@ private:
 };
 
 class Snapshot {
+    friend class SnapshotTest;
+
 public:
     template <typename T>
     static void GenerateSnapshot(const T& t, const char* file_name, const char* func_name, const int line_number,
@@ -421,7 +433,7 @@ public:
     static T GenerateSnapshotInline(const T& t, const char* file_name, const int line_number) {
         const auto content = StringUtility::ToString(t);
         auto file_content = FileUtility::GetAllLines(file_name);
-        auto match_range = getSnapshopInlineMatchRange(file_content[line_number - 1]);
+        auto match_range = getSnapshotInlineMatchRange(file_content[line_number - 1]);
 
         if (match_range == std::make_pair(-1, -1)) {
             return t;
@@ -483,8 +495,8 @@ public:
         FileUtility::AppendFile(snapshot_diff_target_file, res);
     }
 
-protected:
-    static std::pair<int, int> getSnapshopInlineMatchRange(const std::string& s) {
+private:
+    static std::pair<int, int> getSnapshotInlineMatchRange(const std::string& s) {
         const std::string prefix = "SNAPSHOT_INLINE(";
 
         int len = s.length();

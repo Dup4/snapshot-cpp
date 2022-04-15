@@ -4,10 +4,14 @@
 #include "snapshot/snapshot.h"
 
 using namespace std;
-using namespace snapshot;
 
-class SnapshotTest : public testing::Test, public Snapshot {
+namespace snapshot {
+
+class SnapshotTest : public testing::Test {
 public:
+    static std::pair<int, int> getSnapshotInlineMatchRange(const std::string& s) {
+        return Snapshot::getSnapshotInlineMatchRange(s);
+    }
 };
 
 class RawString {
@@ -20,7 +24,7 @@ public:
     }
 };
 
-TEST_F(SnapshotTest, to_string_int) {
+TEST_F(SnapshotTest, example) {
     const std::string a = R"({
         "foo": bar
 })";
@@ -40,3 +44,9 @@ TEST_F(SnapshotTest, to_string_int) {
 
     SNAPSHOT_DIFF(a, b);
 }
+
+TEST_F(SnapshotTest, get_snapshot_inline_match_range) {
+    SNAPSHOT(SnapshotTest::getSnapshotInlineMatchRange("SNAPSHOT_INLINE(\")\")"));
+}
+
+}  // namespace snapshot
