@@ -92,6 +92,10 @@ public:
         return std::to_string(value);
     }
 
+    static std::string ToString(bool value) {
+        return value ? "true" : "false";
+    }
+
     static std::string ToString(const char* s) {
         if (hasEscapeCharacter(s)) {
             return std::string("R\"(") + s + std::string(")\"");
