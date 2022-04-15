@@ -23,7 +23,9 @@ TEST_F(SystemUtilityTest, diff) {
 
     auto diff = SystemUtility::Diff(file_a_path, file_b_path);
 
-    EXPECT_EQ(diff, std::string(R"(diff --git a/tmp/22220693-3FBD-4A2A-A97A-15A181CC7A67 b/tmp/22220693-3FBD-4A2A-A97A-15A181CC7A68
+    EXPECT_EQ(diff,
+            std::string(
+                    R"(diff --git a/tmp/22220693-3FBD-4A2A-A97A-15A181CC7A67 b/tmp/22220693-3FBD-4A2A-A97A-15A181CC7A68
 index 72943a1..f761ec1 100644
 --- a/tmp/22220693-3FBD-4A2A-A97A-15A181CC7A67
 +++ b/tmp/22220693-3FBD-4A2A-A97A-15A181CC7A68
