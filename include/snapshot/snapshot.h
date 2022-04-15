@@ -199,6 +199,8 @@ private:
 
 class FileUtility {
 public:
+    // Create folder
+    // If the directory does not exist, it will be created recursively
     static bool Mkdir(const std::string& path) {
         // if the path exists in its entirety
         // there is no need to create it
