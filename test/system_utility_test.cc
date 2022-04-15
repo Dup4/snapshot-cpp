@@ -10,4 +10,6 @@ class SystemUtilityTest : public testing::Test {
 public:
 };
 
-TEST_F(SystemUtilityTest, diff) {}
+TEST_F(SystemUtilityTest, exec) {
+    EXPECT_EQ(SystemUtility::Exec("echo \"aaa\""), "aaa\n");
+}
