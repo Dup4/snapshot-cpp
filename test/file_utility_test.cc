@@ -45,3 +45,19 @@ TEST_F(FileUtilityTest, remove_dir) {
 
     EXPECT_NE(0, access(file_path, F_OK));
 }
+
+TEST_F(FileUtilityTest, get_all_lines) {
+    const char* file_path = "/tmp/340E2B12-25DD-4BB6-9A41-D24C8C4F76D4";
+
+    system((std::string("echo \"a\nb\nc\" > ") + file_path).c_str());
+
+    const auto v = FileUtility::GetAllLines(file_path);
+
+    EXPECT_EQ(4, v.size());
+    EXPECT_EQ(v[0], "a");
+    EXPECT_EQ(v[1], "b");
+    EXPECT_EQ(v[2], "c");
+    EXPECT_EQ(v[3], "");
+
+    system((std::string("rm ") + file_path).c_str());
+}
