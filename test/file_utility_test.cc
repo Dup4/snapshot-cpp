@@ -11,13 +11,13 @@ public:
 };
 
 TEST_F(FileUtilityTest, get_all_lines) {
-    const std::string a = R"(
+    const std::string a = R"({
         "foo": bar
-    )";
+})";
 
-    const std::string b = R"(
+    const std::string b = R"({
         "foo": bar2
-    )";
+})";
 
     SNAPSHOT_DIFF(a, b);
 }
