@@ -11,6 +11,18 @@ class StringUtilityTest : public testing::Test {
 public:
 };
 
+class CustomToString {
+public:
+    int x;
+    int y;
+    int z;
+
+    friend ostream& operator<<(ostream& os, const CustomToString& c) {
+        os << c.x << " " << c.y << " " << c.z << '\n';
+        return os;
+    }
+};
+
 TEST_F(StringUtilityTest, to_string) {
     EXPECT_EQ(StringUtility::ToString(numeric_limits<int>::min()), std::string("-2147483648"));
     EXPECT_EQ(StringUtility::ToString(numeric_limits<int>::max()), std::string("2147483647"));
@@ -64,6 +76,13 @@ TEST_F(StringUtilityTest, to_string) {
     std::string("ddd"),
 }
 )#");
+
+    CustomToString c;
+    c.x = 1;
+    c.y = 2;
+    c.z = 3;
+
+    EXPECT_EQ(StringUtility::ToString(c), "1 2 3\n");
 }
 
 TEST_F(StringUtilityTest, split_and_join) {
