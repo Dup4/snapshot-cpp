@@ -46,7 +46,8 @@ TEST_F(SnapshotTest, example) {
 }
 
 TEST_F(SnapshotTest, get_snapshot_inline_match_range) {
-    SNAPSHOT(SnapshotTest::getSnapshotInlineMatchRange("SNAPSHOT_INLINE(\")\")"));
+    // this case will be broken
+    EXPECT_EQ(SnapshotTest::getSnapshotInlineMatchRange("SNAPSHOT_INLINE(\")\")"), make_pair(0, 17));
 }
 
 }  // namespace snapshot
