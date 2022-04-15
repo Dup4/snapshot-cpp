@@ -10,7 +10,7 @@ class UtilityTest : public testing::Test {
 public:
 };
 
-TEST_F(UtilityTest, all_and_any) {
+TEST_F(UtilityTest, all_and_any_and_count) {
     vector<int> v({1, 2, 3});
 
     EXPECT_EQ(true, Utility::All(v, [](const int x) {
@@ -18,6 +18,10 @@ TEST_F(UtilityTest, all_and_any) {
     }));
 
     EXPECT_EQ(true, Utility::Any(v, [](const int x) {
+        return x >= 2;
+    }));
+
+    EXPECT_EQ(2, Utility::Count(v, [](const int x) {
         return x >= 2;
     }));
 }
