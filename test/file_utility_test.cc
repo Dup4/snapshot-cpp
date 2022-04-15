@@ -61,3 +61,17 @@ TEST_F(FileUtilityTest, get_all_lines) {
 
     system((std::string("rm ") + file_path).c_str());
 }
+
+TEST_F(FileUtilityTest, rewrite_file) {
+    const char* file_path = "/tmp/340E2B12-25DD-4BB6-9A41-D24C8C4F76D4";
+
+    system((std::string("echo \"abc\" > ") + file_path).c_str());
+
+    EXPECT_EQ(StringUtility::Join(FileUtility::GetAllLines(file_path), ' '), "abc ");
+
+    FileUtility::RewriteFile(file_path, "cba");
+
+    EXPECT_EQ(StringUtility::Join(FileUtility::GetAllLines(file_path), ' '), "cba");
+
+    system((std::string("rm ") + file_path).c_str());
+}
