@@ -8,9 +8,11 @@ debug:
 	cmake --build build -j
 
 unittest:
+	find ./build/test -name "*.gcda" -print0 | xargs -0 rm
 	./build/bin/unit_test
 
 benchmark:
+	find ./build/test -name "*.gcda" -print0 | xargs -0 rm
 	./build/bin/unit_benchmark
 
 .PHONY: clean
