@@ -23,6 +23,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
 
 add_executable(
