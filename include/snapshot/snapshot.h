@@ -16,6 +16,8 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace snapshot {
@@ -57,6 +59,8 @@ public:
 };
 
 class StringUtility {
+    friend class StringUtilityTest;
+
 public:
     template <typename T>
     static std::string ToString(const T& t) {
@@ -216,6 +220,19 @@ private:
 
         return false;
     }
+
+    template <typename T>
+    class hasStdToString {
+    private:
+        template <typename U>
+        static auto check(int) -> decltype(std::to_string(std::declval<U>()), std::true_type());
+
+        template <typename U>
+        static std::false_type check(...);
+
+    public:
+        enum { value = std::is_same<decltype(check<T>(0)), std::true_type>::value };
+    };
 };
 
 class FileUtility {

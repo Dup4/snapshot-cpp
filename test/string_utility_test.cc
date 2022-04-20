@@ -5,10 +5,13 @@
 #include "snapshot/snapshot.h"
 
 using namespace std;
-using namespace snapshot;
+
+namespace snapshot {
 
 class StringUtilityTest : public testing::Test {
 public:
+    template <typename T>
+    using HasStdToString = StringUtility::hasStdToString<T>;
 };
 
 class CustomToString {
@@ -130,3 +133,11 @@ TEST_F(StringUtilityTest, split_and_join) {
         EXPECT_EQ(StringUtility::Join(v, '.'), s);
     }
 }
+
+TEST_F(StringUtilityTest, has_std_to_string) {
+    EXPECT_TRUE(StringUtilityTest::HasStdToString<int>::value);
+
+    EXPECT_FALSE(StringUtilityTest::HasStdToString<CustomToString>::value);
+}
+
+}  // namespace snapshot
