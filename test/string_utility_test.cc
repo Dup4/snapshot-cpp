@@ -2,16 +2,12 @@
 #include <iostream>
 #include <limits>
 
-#include "snapshot/snapshot.h"
-
 using namespace std;
 
 namespace snapshot {
 
 class StringUtilityTest : public testing::Test {
 public:
-    template <typename T>
-    using HasStdToString = StringUtility::hasStdToString<T>;
 };
 
 class CustomToString {
@@ -25,6 +21,27 @@ public:
         return os;
     }
 };
+
+class CustomToString1 {
+public:
+    int x;
+    int y;
+    int z;
+};
+
+}  // namespace snapshot
+
+using namespace snapshot;
+
+namespace std {
+
+string to_string(const CustomToString1& c) {
+    return to_string(c.x) + " " + to_string(c.y) + " " + to_string(c.z) + "\n";
+}
+
+}  // namespace std
+
+#include "snapshot/snapshot.h"
 
 TEST_F(StringUtilityTest, to_string) {
     EXPECT_EQ(StringUtility::ToString(numeric_limits<int>::min()), std::string("-2147483648"));
@@ -86,6 +103,13 @@ TEST_F(StringUtilityTest, to_string) {
     c.z = 3;
 
     EXPECT_EQ(StringUtility::ToString(c), "1 2 3\n");
+
+    CustomToString1 c1;
+    c1.x = 1;
+    c1.y = 2;
+    c1.z = 3;
+
+    EXPECT_EQ(StringUtility::ToString(c1), "1 2 3\n");
 }
 
 TEST_F(StringUtilityTest, split_and_join) {
@@ -133,11 +157,3 @@ TEST_F(StringUtilityTest, split_and_join) {
         EXPECT_EQ(StringUtility::Join(v, '.'), s);
     }
 }
-
-TEST_F(StringUtilityTest, has_std_to_string) {
-    EXPECT_TRUE(StringUtilityTest::HasStdToString<int>::value);
-
-    EXPECT_FALSE(StringUtilityTest::HasStdToString<CustomToString>::value);
-}
-
-}  // namespace snapshot

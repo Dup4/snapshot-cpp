@@ -8,6 +8,7 @@ debug:
 	cmake --build build -j
 
 tests:
+	find ./build/test -name "*.gcda" -print0 | xargs -0 rm
 	cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_ENABLE_TESTING=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -Dsnapshot_build_tests=ON
 	cmake --build build -j
 

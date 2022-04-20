@@ -63,48 +63,31 @@ class StringUtility {
 
 public:
     template <typename T>
+    class HasStdToString {
+    private:
+        template <typename U>
+        static auto check(int) -> decltype(std::to_string(std::declval<U>()), std::true_type());
+
+        template <typename U>
+        static std::false_type check(...);
+
+    public:
+        enum { value = std::is_same<decltype(check<T>(0)), std::true_type>::value };
+    };
+
+public:
+    template <typename T, std::enable_if_t<HasStdToString<T>::value, bool> = true>
+    static std::string ToString(const T& t) {
+        return std::to_string(t);
+    }
+
+    template <typename T, std::enable_if_t<!HasStdToString<T>::value, bool> = true>
     static std::string ToString(const T& t) {
         std::stringstream ss;
         std::string s;
         ss << t;
         ss >> s;
         return ss.str();
-    }
-
-    static std::string ToString(int value) {
-        return std::to_string(value);
-    }
-
-    static std::string ToString(long value) {
-        return std::to_string(value);
-    }
-
-    static std::string ToString(long long value) {
-        return std::to_string(value);
-    }
-
-    static std::string ToString(unsigned value) {
-        return std::to_string(value);
-    }
-
-    static std::string ToString(unsigned long value) {
-        return std::to_string(value);
-    }
-
-    static std::string ToString(unsigned long long value) {
-        return std::to_string(value);
-    }
-
-    static std::string ToString(float value) {
-        return std::to_string(value);
-    }
-
-    static std::string ToString(double value) {
-        return std::to_string(value);
-    }
-
-    static std::string ToString(long double value) {
-        return std::to_string(value);
     }
 
     static std::string ToString(bool value) {
@@ -220,19 +203,6 @@ private:
 
         return false;
     }
-
-    template <typename T>
-    class hasStdToString {
-    private:
-        template <typename U>
-        static auto check(int) -> decltype(std::to_string(std::declval<U>()), std::true_type());
-
-        template <typename U>
-        static std::false_type check(...);
-
-    public:
-        enum { value = std::is_same<decltype(check<T>(0)), std::true_type>::value };
-    };
 };
 
 class FileUtility {
