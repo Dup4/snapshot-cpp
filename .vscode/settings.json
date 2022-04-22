@@ -8,6 +8,9 @@
         "GCOVR",
         "pnpm"
     ],
+    "clangd.arguments": [
+        "--compile-commands-dir=./build",
+    ],
     "files.associations": {
         "BUILD": "starlark",
         "__bit_reference": "cpp",
