@@ -1,13 +1,8 @@
 {
     "editor.tabSize": 4,
-    "editor.formatOnSave": true,
     "editor.insertSpaces": true,
-    "cSpell.words": [
-        "cmake",
-        "codecov",
-        "GCOVR",
-        "pnpm"
-    ],
+    "editor.formatOnSave": true,
+    "editor.trimAutoWhitespace": true,
     "clangd.arguments": [
         "--compile-commands-dir=./build",
     ],
@@ -101,5 +96,11 @@
         "memory_resource": "cpp",
         "utility": "cpp",
         "stop_token": "cpp"
-    }
+    },
+    "cSpell.words": [
+        "cmake",
+        "codecov",
+        "GCOVR",
+        "pnpm"
+    ],
 }
