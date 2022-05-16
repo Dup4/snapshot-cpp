@@ -7,6 +7,8 @@
 [![codecov](https://codecov.io/gh/Dup4/snapshot-cpp/branch/main/graph/badge.svg)](https://codecov.io/gh/Dup4/snapshot-cpp)
 [![GitHub release](https://img.shields.io/github/release/Dup4/snapshot-cpp.svg)](https://GitHub.com/Dup4/snapshot-cpp/releases/)
 
+Similar to [Jest Snapshot](https://jestjs.io/docs/snapshot-testing), but implemented in C++.
+
 ## Feature
 
 * `SNAPSHOT(content)`
