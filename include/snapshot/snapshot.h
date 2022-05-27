@@ -141,7 +141,7 @@ public:
 
     static std::vector<std::string> Split(const std::string& s, const char delimiter) {
         std::vector<std::string> res;
-        int len = s.length();
+        int len = static_cast<int>(s.length());
 
         std::string t = "";
         for (int i = 0; i <= len; i++) {
@@ -184,7 +184,7 @@ private:
         const char* escape_character_set = "\\\"\'\?\a\b\f\n\r\t\v\0";
 
         const auto check = [&escape_character_set](char c) -> bool {
-            auto p = escape_character_set;
+            const auto* p = escape_character_set;
             while (*p) {
                 if (c == *p) {
                     return true;
@@ -246,7 +246,7 @@ public:
 
         while (true) {
             size_t cur_pos = path.find('/', pos + 1);
-            pos = cur_pos;
+            pos = static_cast<int>(cur_pos);
 
             if (cur_pos == std::string::npos) {
                 break;
@@ -296,14 +296,14 @@ public:
     static void RewriteFile(const std::string& file_path, const std::string& content) {
         std::ofstream file;
         file.open(file_path, std::ofstream::out | std::ofstream::trunc);
-        file.write(content.c_str(), content.length());
+        file.write(content.c_str(), static_cast<long>(content.length()));
         file.close();
     }
 
     static void AppendFile(const std::string& file_path, const std::string& content) {
         std::ofstream file;
         file.open(file_path, std::ofstream::out | std::ofstream::ate | std::ofstream::app);
-        file.write(content.c_str(), content.length());
+        file.write(content.c_str(), static_cast<long>(content.length()));
         file.close();
     }
 
@@ -322,13 +322,13 @@ private:
         int r = -1;
 
         if (d) {
-            struct dirent* p;
+            struct dirent* p = nullptr;
 
             r = 0;
             while (!r && (p = readdir(d))) {
                 int r2 = -1;
-                char* buf;
-                size_t len;
+                char* buf = nullptr;
+                size_t len = 0;
 
                 /* Skip the names "." and ".." as we don't want to recurse on them. */
                 if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, "..")) {
@@ -431,7 +431,7 @@ public:
     static T GenerateSnapshotInline(const T& t, const char* file_name, const int line_number) {
         const auto content = StringUtility::ToString(t);
         auto file_content = FileUtility::GetAllLines(file_name);
-        auto& line_number_vec = getLineNumberVec(file_name, file_content.size());
+        auto& line_number_vec = getLineNumberVec(file_name, static_cast<int>(file_content.size()));
         const auto actual_line_number = getActualLineNumber(line_number_vec, line_number);
 
         auto match_range = getSnapshotInlineMatchRange(file_content[actual_line_number - 1]);
@@ -505,10 +505,10 @@ private:
     static std::pair<int, int> getSnapshotInlineMatchRange(const std::string& s) {
         const std::string prefix = "SNAPSHOT_INLINE(";
 
-        int len = s.length();
-        int prefix_len = prefix.length();
+        int len = static_cast<int>(s.length());
+        int prefix_len = static_cast<int>(prefix.length());
 
-        for (int i = prefix.length() - 1; i + 1 < len; i++) {
+        for (int i = static_cast<int>(prefix.length()) - 1; i + 1 < len; i++) {
             if (s.substr(i - prefix_len + 1, prefix_len) == prefix) {
                 int l = 1;
                 for (int j = i + 1; j < len; j++) {
