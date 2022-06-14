@@ -455,6 +455,7 @@ public:
     template <typename T>
     static void GenerateSnapshotDiff(const T& before, const T& after, const char* file_name, const char* func_name,
             const int line_number, const std::vector<std::string>& custom_keys = std::vector<std::string>({})) {
+        func_name = fixFuncName(func_name);
         const auto filename_split = StringUtility::Split(file_name, '/');
         const auto snapshot_key = getSnapshotKey(file_name, func_name, line_number, custom_keys);
         const auto snapshot_filename = getSnapshotDiffFilename(filename_split.back());
@@ -502,6 +503,14 @@ public:
     }
 
 private:
+    static const char* fixFuncName(const char* func_name) {
+        if (strcmp(func_name, "operator()") == 0) {
+            return "operator";
+        }
+
+        return func_name;
+    }
+
     static std::pair<int, int> getSnapshotInlineMatchRange(const std::string& s) {
         const std::string prefix = "SNAPSHOT_INLINE(";
 
