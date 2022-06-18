@@ -236,7 +236,7 @@ public:
             auto ret = mkdir(path.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
             // if the path already exists
-            // don't conside creation failed
+            // don't consider creation failed
             if (ret == 0 || errno == EEXIST) {
                 return true;
             }
