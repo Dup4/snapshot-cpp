@@ -118,6 +118,7 @@
         "cmake",
         "codecov",
         "GCOVR",
+        "jwlawson",
         "pnpm"
     ],
 }
