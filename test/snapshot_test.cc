@@ -40,7 +40,7 @@ TEST_F(SnapshotTest, example) {
     RawString r;
     r.s = snapshot_inline;
 
-    SNAPSHOT_INLINE(r);
+    SNAPSHOT(r);
 
     SNAPSHOT_DIFF(a, b);
 }

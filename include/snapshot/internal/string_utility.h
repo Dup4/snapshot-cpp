@@ -6,33 +6,34 @@
 #include <type_traits>
 #include <vector>
 
+#include "../types_check/has_class_internal_to_string.h"
+#include "../types_check/has_global_to_string.h"
+#include "../types_check/has_operator_stream.h"
+#include "../types_check/has_std_to_string.h"
+
 namespace snapshot {
 
 class StringUtility {
     friend class StringUtilityTest;
 
 public:
-    template <typename T>
-    class HasStdToString {
-    private:
-        template <typename U>
-        static auto check(int) -> decltype(std::to_string(std::declval<U>()), std::true_type());
-
-        template <typename U>
-        static std::false_type check(...);
-
-    public:
-        enum { value = std::is_same<decltype(check<T>(0)), std::true_type>::value };
-    };
-
-public:
-    template <typename T, std::enable_if_t<HasStdToString<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<internal::has_std_to_string_v<T>, bool> = true>
     static std::string ToString(const T& t) {
         return std::to_string(t);
     }
 
-    template <typename T, std::enable_if_t<!HasStdToString<T>::value, bool> = true>
+    template <typename T, std::enable_if_t<internal::has_global_to_string_v<T>, bool> = true>
     static std::string ToString(const T& t) {
+        return to_string(t);
+    }
+
+    template <typename T, std::enable_if_t<internal::has_class_internal_to_string_v<T>, bool> = true>
+    static std::string ToString(const T& t) {
+        return t.ToString();
+    }
+
+    template <typename T, std::enable_if_t<internal::has_operator_stream_v<T>, bool> = true>
+    static std::string ToString([[maybe_unused]] const T& t) {
         std::stringstream ss;
         std::string s;
         ss << t;

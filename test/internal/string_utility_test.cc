@@ -1,10 +1,12 @@
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
+
 #include <iostream>
 #include <limits>
 
-using namespace std;
+#include "snapshot/snapshot.h"
 
-namespace snapshot {
+using namespace std;
+using namespace snapshot;
 
 class StringUtilityTest : public testing::Test {
 public:
@@ -29,19 +31,9 @@ public:
     int z;
 };
 
-}  // namespace snapshot
-
-using namespace snapshot;
-
-namespace std {
-
 string to_string(const CustomToString1& c) {
     return to_string(c.x) + " " + to_string(c.y) + " " + to_string(c.z) + "\n";
 }
-
-}  // namespace std
-
-#include "snapshot/snapshot.h"
 
 TEST_F(StringUtilityTest, to_string) {
     EXPECT_EQ(StringUtility::ToString(numeric_limits<int>::min()), std::string("-2147483648"));
