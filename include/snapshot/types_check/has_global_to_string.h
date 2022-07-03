@@ -9,7 +9,7 @@ template <typename T>
 class has_global_to_string {
 private:
     template <typename U>
-    static auto check(int) -> decltype(to_string(std::declval<U>()), std::true_type());
+    static auto check(int) -> decltype(ToString(std::declval<U>()), std::true_type());
 
     template <typename U>
     static std::false_type check(...);

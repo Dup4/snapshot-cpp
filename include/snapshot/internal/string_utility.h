@@ -13,6 +13,15 @@
 
 namespace snapshot {
 
+namespace internal {
+
+template <typename T, std::enable_if_t<internal::has_global_to_string_v<T>, bool> = true>
+inline std::string VisitGlobalToString(const T& t) {
+    return ToString(t);
+}
+
+}  // namespace internal
+
 class StringUtility {
     friend class StringUtilityTest;
 
@@ -24,7 +33,7 @@ public:
 
     template <typename T, std::enable_if_t<internal::has_global_to_string_v<T>, bool> = true>
     static std::string ToString(const T& t) {
-        return to_string(t);
+        return internal::VisitGlobalToString(t);
     }
 
     template <typename T, std::enable_if_t<internal::has_class_internal_to_string_v<T>, bool> = true>

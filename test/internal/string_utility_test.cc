@@ -31,7 +31,7 @@ public:
     int z;
 };
 
-string to_string(const CustomToString1& c) {
+string ToString(const CustomToString1& c) {
     return to_string(c.x) + " " + to_string(c.y) + " " + to_string(c.z) + "\n";
 }
 
