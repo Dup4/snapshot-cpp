@@ -25,8 +25,11 @@ class Snapshot {
 
 public:
     template <typename T>
-    static void GenerateSnapshot(const T& t, const char* file_name, const char* func_name, const int line_number,
-            const std::vector<std::string>& custom_keys = std::vector<std::string>({})) {
+    static void GenerateSnapshot(const T& t,
+                                 const char* file_name,
+                                 const char* func_name,
+                                 const int line_number,
+                                 const std::vector<std::string>& custom_keys = std::vector<std::string>({})) {
         const auto content = StringUtility::ToString(t);
         const auto filename_split = StringUtility::Split(file_name, '/');
         const auto snapshot_key = getSnapshotKey(file_name, func_name, line_number, custom_keys);
@@ -79,8 +82,12 @@ public:
     }
 
     template <typename T>
-    static void GenerateSnapshotDiff(const T& before, const T& after, const char* file_name, const char* func_name,
-            const int line_number, const std::vector<std::string>& custom_keys = std::vector<std::string>({})) {
+    static void GenerateSnapshotDiff(const T& before,
+                                     const T& after,
+                                     const char* file_name,
+                                     const char* func_name,
+                                     const int line_number,
+                                     const std::vector<std::string>& custom_keys = std::vector<std::string>({})) {
         func_name = fixFuncName(func_name);
         const auto filename_split = StringUtility::Split(file_name, '/');
         const auto snapshot_key = getSnapshotKey(file_name, func_name, line_number, custom_keys);
@@ -163,8 +170,9 @@ private:
         return std::make_pair(-1, -1);
     }
 
-    static std::string replaceSnapshotInlineContent(
-            std::pair<int, int> replace_range, const std::string& origin_s, const std::string& replace_s) {
+    static std::string replaceSnapshotInlineContent(std::pair<int, int> replace_range,
+                                                    const std::string& origin_s,
+                                                    const std::string& replace_s) {
         return origin_s.substr(0, replace_range.first) + replace_s + origin_s.substr(replace_range.second + 1);
     }
 
@@ -211,8 +219,10 @@ private:
         return std::string(file_name) + std::string(".snap.after");
     }
 
-    static std::string getSnapshotKey(const char* file_name, const char* func_name, const int line_number,
-            const std::vector<std::string>& custom_keys) {
+    static std::string getSnapshotKey(const char* file_name,
+                                      const char* func_name,
+                                      const int line_number,
+                                      const std::vector<std::string>& custom_keys) {
         std::string key = "";
 
         key += file_name;
