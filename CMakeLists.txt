@@ -2,7 +2,7 @@ option(snapshot_build_tests "Build all of snapshot's own tests." OFF)
 
 cmake_minimum_required(VERSION 3.14)
 
-project(snapshot VERSION 0.1.11)
+project(snapshot VERSION 0.1.12)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
