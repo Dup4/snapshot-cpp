@@ -1,0 +1,45 @@
+package(default_visibility = ["//visibility:public"])
+
+common_copts = [
+    "-std=c++17",
+    "-O3",
+    "-g",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+]
+
+cc_library(
+    name = "snapshot",
+    hdrs = glob(["include/snapshot/**/*.h"]),
+    includes = [
+        "include",
+    ],
+)
+
+cc_binary(
+    name = "benchmark",
+    srcs = glob([
+        "test/*_benchmark.cc",
+    ]),
+    copts = common_copts,
+    deps = [
+        ":snapshot",
+        "@google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_binary(
+    name = "unittest",
+    srcs = glob([
+        "test/*_test.cc",
+        "test/**/*_test.cc",
+    ]),
+    copts = common_copts + [
+        "-Wno-unused-result",
+    ],
+    deps = [
+        ":snapshot",
+        "@gtest//:gtest_main",
+    ],
+)

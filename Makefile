@@ -38,3 +38,15 @@ clean_test:
 	fi
 
 .PHONY: clean clean_test
+
+bazel_bench:
+	bazel run :benchmark --compilation_mode=opt
+
+bazel_ut:
+	bazel run :unittest --compilation_mode=opt
+
+bazel_clean:
+	rm -rf bazel-* external
+
+bazel_refresh_all:
+	bazel run @bazel_compile_commands_extractor//:refresh_all
