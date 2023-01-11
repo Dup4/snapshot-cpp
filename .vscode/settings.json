@@ -120,7 +120,9 @@
         "codecov",
         "declval",
         "GCOVR",
+        "genhtml",
         "jwlawson",
+        "lcov",
         "pnpm"
     ],
 }
