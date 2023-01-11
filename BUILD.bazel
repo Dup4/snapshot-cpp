@@ -12,8 +12,25 @@ common_copts = [
 cc_library(
     name = "snapshot",
     hdrs = glob(["include/snapshot/**/*.h"]),
+    copts = common_copts,
     includes = [
         "include",
+    ],
+)
+
+cc_test(
+    name = "unittest",
+    srcs = glob([
+        "test/*_test.cc",
+        "test/**/*_test.cc",
+    ]),
+    copts = common_copts + [
+        "-fno-access-control",
+        "-Wno-unused-result",
+    ],
+    deps = [
+        ":snapshot",
+        "@gtest//:gtest_main",
     ],
 )
 
@@ -26,20 +43,5 @@ cc_binary(
     deps = [
         ":snapshot",
         "@google_benchmark//:benchmark_main",
-    ],
-)
-
-cc_binary(
-    name = "unittest",
-    srcs = glob([
-        "test/*_test.cc",
-        "test/**/*_test.cc",
-    ]),
-    copts = common_copts + [
-        "-Wno-unused-result",
-    ],
-    deps = [
-        ":snapshot",
-        "@gtest//:gtest_main",
     ],
 )

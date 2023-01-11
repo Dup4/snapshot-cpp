@@ -3,91 +3,75 @@ name: Test
 
 on:
   push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os:
+          - ubuntu-latest
+          - macos-latest
+        tool:
+          - cmake
+          - bazel
+        compiler:
+          - gcc
+          - clang
+        compiler_version:
+          - 12
+          - 15
+        exclude:
+          - compiler: gcc
+            compiler_version: 15
+          - compiler: clang
+            compiler_version: 12
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout codebase
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Setup bazel
+        if: matrix.tool == 'bazel'
+        uses: jwlawson/actions-setup-bazel@v1
+        with:
+          bazel-version: "latest"
 
       - name: Setup cmake
+        if: matrix.tool == 'cmake'
         uses: jwlawson/actions-setup-cmake@v1
         with:
           cmake-version: "latest"
 
-      - name: Install LLVM and Clang
+      - name: Setup Clang
+        if: matrix.compiler == 'clang'
         uses: KyleMayes/install-llvm-action@v1
         with:
-          version: "14.0"
+          version: ${{ matrix.compiler_version }}
 
-      - name: Build
+      - name: Set Clang Compiler Env
+        if: matrix.compiler == 'clang'
         run: |
-          export CC=clang
-          export CXX=clang++
+          echo "CC=${LLVM_PATH}/bin/clang" >> $GITHUB_ENV
+          echo "CXX=${LLVM_PATH}/bin/clang++" >> $GITHUB_ENV
+
+      - name: Setup GCC
+        uses: Dup4/actions-setup-gcc@v1
+        if: matrix.compiler == 'gcc'
+        with:
+          version: ${{ matrix.compiler_version }}
+
+      - name: Build And Test Use Cmake
+        if: matrix.tool == 'cmake'
+        run: |
           make tests
-
-      - name: Unit Test
-        run: |
           make unittest
-
-      - name: GCOVR Analysis
-        if: contains(matrix.os, 'ubuntu')
-        run: |
-          pip install gcovr==5.1
-          bash -e gcovr.sh
-
-      - name: upload coverage artifact
-        if: contains(matrix.os, 'ubuntu')
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage
-          path: .coverage
-
-      - name: Upload coverage to CodeCov
-        if: contains(matrix.os, 'ubuntu')
-        uses: codecov/codecov-action@v2
-        with:
-          files: .coverage/coverage.xml
-          verbose: true
-
-  benchmark:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-
-    steps:
-      - name: Checkout codebase
-        uses: actions/checkout@v2
-
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1
-        with:
-          cmake-version: "latest"
-
-      - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
-        with:
-          version: "14.0"
-
-      - name: Build
-        run: |
-          export CC=clang
-          export CXX=clang++
-          make tests
-
-      - name: Benchmark
-        run: |
           make benchmark
+
+      - name: Build And Test Use Bazel
+        if: matrix.tool == 'bazel'
+        run: |
+          make bazel_ut
+          make bazel_bench

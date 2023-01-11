@@ -1,8 +1,8 @@
-option(snapshot_build_tests "Build all of snapshot's own tests." OFF)
+option(SNAPSHOT_BUILD_TESTS "Build all of snapshot's own tests." OFF)
 
 cmake_minimum_required(VERSION 3.14)
 
-project(snapshot VERSION 0.1.12)
+project(snapshot)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,7 +22,7 @@ include_directories(
 add_library(snapshot INTERFACE)
 target_include_directories(snapshot INTERFACE ${PROJECT_SOURCE_DIR}/include/)
 
-if (snapshot_build_tests)
+if (SNAPSHOT_BUILD_TESTS)
 
 enable_testing()
 

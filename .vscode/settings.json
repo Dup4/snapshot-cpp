@@ -115,11 +115,14 @@
         "stop_token": "cpp"
     },
     "cSpell.words": [
+        "bazel",
         "cmake",
         "codecov",
         "declval",
         "GCOVR",
+        "genhtml",
         "jwlawson",
+        "lcov",
         "pnpm"
     ],
 }
