@@ -18,7 +18,9 @@ Similar to [Jest Snapshot][jest-snapshot], but implemented in C++.
 
 ## Usage
 
-[![asciicast](https://asciinema.org/a/608449.svg)](https://asciinema.org/a/608449)
+<a href="https://asciinema.org/a/608449" target="_blank">
+    <img src="https://asciinema.org/a/608449.svg" />
+</a>
 
 ```cpp
 const std::string tmp = "snapshot-cpp";
