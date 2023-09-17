@@ -16,6 +16,37 @@ Similar to [Jest Snapshot][jest-snapshot], but implemented in C++.
 * `SNAPSHOT_DIFF(before_content, after_content)` required `git` binary.
 * Support Linux and macOS.
 
+## Usage
+
+```cpp
+const std::string tmp = "snapshot-cpp";
+const std::string tmp_diff = tmp + "-diff";
+
+EXPECT_EQ(tmp, SNAPSHOT_INLINE(tmp));
+// EXPECT_EQ(tmp, std::string("snapshot-cpp"));
+
+SNAPSHOT(tmp);
+// // /home/Dup4/snapshot-cpp/test/snapshot_test.cc.TestBody.58.0
+// std::string("snapshot-cpp")
+
+SNAPSHOT_DIFF(tmp, tmp_diff);
+// // /home/Dup4/snapshot-cpp/test/snapshot_test.cc.TestBody.59.0
+// // before
+// std::string("snapshot-cpp")
+// // after
+// std::string("snapshot-cpp-diff")
+// // diff
+// diff --git a/tmp/snapshot_test.cc.TestBody.59.0.snap.before b/tmp/snapshot_test.cc.TestBody.59.0.snap.after
+// index aeb786e..3982900 100644
+// --- a/tmp/snapshot_test.cc.TestBody.59.0.snap.before
+// +++ b/tmp/snapshot_test.cc.TestBody.59.0.snap.after
+// @@ -1 +1 @@
+// -std::string("snapshot-cpp")
+// \ No newline at end of file
+// +std::string("snapshot-cpp-diff")
+// \ No newline at end of file
+```
+
 [clang-format-badge]: https://github.com/Dup4/snapshot-cpp/workflows/Clang%20Format/badge.svg
 [clang-format-action]: https://github.com/Dup4/snapshot-cpp/actions/workflows/clang_format.yml
 [test-badge]: https://github.com/Dup4/snapshot-cpp/workflows/Test/badge.svg
