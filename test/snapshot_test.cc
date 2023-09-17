@@ -50,4 +50,13 @@ TEST_F(SnapshotTest, get_snapshot_inline_match_range) {
     EXPECT_EQ(SnapshotTest::getSnapshotInlineMatchRange("SNAPSHOT_INLINE(\")\")"), make_pair(0, 17));
 }
 
+TEST_F(SnapshotTest, README) {
+    const std::string tmp = "snapshot-cpp";
+    const std::string tmp_diff = tmp + "-diff";
+
+    EXPECT_EQ(tmp, std::string("snapshot-cpp"));
+    SNAPSHOT(tmp);
+    SNAPSHOT_DIFF(tmp, tmp_diff);
+}
+
 }  // namespace snapshot
