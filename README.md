@@ -49,6 +49,10 @@ SNAPSHOT_DIFF(tmp, tmp_diff);
 // \ No newline at end of file
 ```
 
+## License
+
+[MIT](./LICENSE) License © 2022 - PRESENT [Dup4][dup4]
+
 [clang-format-badge]: https://github.com/Dup4/snapshot-cpp/workflows/Clang%20Format/badge.svg
 [clang-format-action]: https://github.com/Dup4/snapshot-cpp/actions/workflows/clang_format.yml
 [test-badge]: https://github.com/Dup4/snapshot-cpp/workflows/Test/badge.svg
@@ -58,3 +62,4 @@ SNAPSHOT_DIFF(tmp, tmp_diff);
 [release-badge]: https://img.shields.io/github/release/Dup4/snapshot-cpp.svg
 [release-page]: https://GitHub.com/Dup4/snapshot-cpp/releases/
 [jest-snapshot]: https://jestjs.io/docs/snapshot-testing
+[dup4]: https://github.com/Dup4
