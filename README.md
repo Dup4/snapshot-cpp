@@ -18,6 +18,8 @@ Similar to [Jest Snapshot][jest-snapshot], but implemented in C++.
 
 ## Usage
 
+<script async id="asciicast-608449" src="https://asciinema.org/a/608449.js"></script>
+
 ```cpp
 const std::string tmp = "snapshot-cpp";
 const std::string tmp_diff = tmp + "-diff";
