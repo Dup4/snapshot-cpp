@@ -16,6 +16,29 @@ Similar to [Jest Snapshot][jest-snapshot], but implemented in C++.
 * `SNAPSHOT_DIFF(before_content, after_content)` required `git` binary.
 * Support Linux and macOS.
 
+## Integration
+
+### CMake
+
+```cmake
+FetchContent_Declare(
+    snapshot
+    QUIET
+    GIT_REPOSITORY https://github.com/Dup4/snapshot-cpp.git
+    GIT_TAG v{x.y.z} # Where `x.y.z` is the release version you want to use.
+)
+```
+
+### Bazel
+
+```bazel
+git_repository(
+    name = "snapshot",
+    remote = "https://github.com/Dup4/snapshot-cpp.git",
+    tag = "v{x.y.z}",  # Where `x.y.z` is the release version you want to use.
+)
+```
+
 ## Usage
 
 <a href="https://asciinema.org/a/608449" target="_blank">
